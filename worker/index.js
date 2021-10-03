@@ -125,6 +125,14 @@ async function handleRequest(request) {
               <input type="url" name="url" placeholder="https://cloudflare.com"><br>
               <input type="submit" value="See it uwufied!">
           </form>
+          <h3>Websites that work on some level</h3>
+          <ul>
+            <li><a href="/uwuify?url=https://cloudflare.com">Cloudflare.com</a></li>
+            <li><a href="/uwuify?url=https://en.wikipedia.org/wiki/Cloudflare">Wikipedia (Cloudflare)</a></li>
+            <li><a href="/uwuify?url=https://en.wikipedia.org/">Wikipedia (Home page)</a></li>
+            <li><a href="/uwuify?url=https://motherfuckingwebsite.com/">Motherfucking website</a></li>
+            <li><a href="/uwuify?url=https://aws.com/">AWS</a></li>
+          </ul>
           <p>NoCSS website. I ain't a good frontend developer :).</p>
       </body>
   </html>
