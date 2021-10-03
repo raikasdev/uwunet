@@ -57,19 +57,19 @@ async function handleRequest(request) {
   if ((pathname === '/uwuify' || pathname === '/uwuify/') && targetUrl) {
     try {
       const url = new URL(targetUrl);
+      if (UWUNET_KV.get(url.toString())) {
+        const cache = UWUNET_KV.get(url.toString(), { type: 'json' });
+        if (Date.now() < (cache.timestamp + 600000)) {
+          return new Response(cache.html, {
+            headers: { 'content-type': 'text/html' },
+          })
+          return;
+        }
+      }
       const response = await fetch(url);
       const html = (await (await response).text());
       const root = parse(html);
       deepText(root);
-      /*listOfElements.forEach(e => {
-        console.log("Parsing " + se);
-        root.querySelectorAll(e).forEach(element => {
-          if (element.childNodes.length > 1) {
-            return;
-          }
-          element.innerHTML = uwuify.uwuify(element.innerHTML);
-        })
-      })*/
 
       root.querySelectorAll('a').forEach((link) => {
         try {
@@ -97,6 +97,10 @@ async function handleRequest(request) {
         }
       })
 
+      UWUNET_KV.put(url.toString(), JSON.stringify({
+        timestamp: Date.now(),
+        html: root.toString(),
+      }))
       return new Response(root.toString(), {
         headers: { 'content-type': 'text/html' },
       })
@@ -106,7 +110,7 @@ async function handleRequest(request) {
       })
     }
   }
-  return new Response('GET /uwuify?url=<url>', {
-    headers: { 'content-type': 'text/plain' },
+  return new Response('<!DOCTYPE html><html><head><title>UwUNet</title></head><body><form action="/uwuify"><h1>URL</h1><input type="url" name="url"><input type="submit"></form></body></html>', {
+    headers: { 'content-type': 'text/html' },
   })
 }
