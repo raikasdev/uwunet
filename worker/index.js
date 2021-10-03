@@ -21,7 +21,7 @@ const listOfElements = [
   'SPAN'
 ]
 
-const rootUrl = 'http://localhost:8787/uwuify?url=';
+const rootUrl = 'https://uwunet.raikas.workers.dev/uwuify?url=';
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
