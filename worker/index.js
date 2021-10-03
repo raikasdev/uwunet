@@ -59,7 +59,7 @@ async function handleRequest(request) {
       const url = new URL(targetUrl);
       if (UWUNET_KV.get(url.toString())) {
         const cache = UWUNET_KV.get(url.toString(), { type: 'json' });
-        if (Date.now() < (cache.timestamp + 600000)) {
+        if ((Date.now() - cache.timestamp) < 600000) {
           return new Response(cache.html, {
             headers: { 'content-type': 'text/html' },
           })
