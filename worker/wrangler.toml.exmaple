@@ -1,0 +1,8 @@
+name = "uwunet"
+type = "webpack"
+
+account_id = "xxx"
+workers_dev = true
+route = ""
+zone_id = ""
+compatibility_date = "2021-10-03"

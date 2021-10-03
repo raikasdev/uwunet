@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "name": "uwunet",
+  "version": "1.0.0",
+  "description": "UwUNet uwuifies any website :3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'",
+    "wrangler": "wrangler"
+  },
+  "author": "raikasdev <roni.aikas@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.18.2"
+  },
+  "dependencies": {
+    "@cloudflare/wrangler": "^1.19.3",
+    "node-html-parser": "^4.1.5",
+    "uwuify": "^1.0.1"
+  }
+}

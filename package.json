@@ -1,0 +1,12 @@
+{
+  "name": "uwunet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@cloudflare/wrangler": "^1.19.3"
+  },
+  "scripts": {
+    "wrangler": "wrangler"
+  }
+}
