@@ -110,7 +110,25 @@ async function handleRequest(request) {
       })
     }
   }
-  return new Response('<!DOCTYPE html><html><head><title>UwUNet</title></head><body><form action="/uwuify"><h1>URL</h1><input type="url" name="url"><input type="submit"></form></body></html>', {
+  return new Response(`
+  <!DOCTYPE html>
+  <html>
+      <head>
+          <title>UwUNet</title>
+      </head>
+      <body>
+          <form action="/uwuify">
+              <h1>UwUNet</h1>
+              <p>View (almost) every website UWUFIED!</p>
+
+              <p>What website would you like to see?</p>
+              <input type="url" name="url" placeholder="https://cloudflare.com"><br>
+              <input type="submit" value="See it uwufied!">
+          </form>
+          <p>NoCSS website. I ain't a good frontend developer :).</p>
+      </body>
+  </html>
+`, {
     headers: { 'content-type': 'text/html' },
   })
 }
