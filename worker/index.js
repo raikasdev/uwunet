@@ -1,51 +1,65 @@
-const { parse } = require('node-html-parser');
 const uwuifier = require('uwuify');
 const uwuify = new uwuifier();
 
-const listOfElements = [
-  // This array shoud contain all elements that's innerHTML should be UWU'd
-  'P',
-  'H1',
-  'H2',
-  'H3',
-  'H4',
-  'H5',
-  'H6',
-  'A',
-  'UL',
-  'LI',
-  'EM',
-  'B',
-  'I',
-  'STRONG',
-  'SPAN'
-]
-
 const rootUrl = 'https://uwunet.raikas.workers.dev/uwuify?url=';
+
+class TextHandler {
+  text(text) {
+    if (!text.text || text.length == 0) return;
+    text.replace(uwuify.uwuify(text.text))
+  }
+}
+
+class HyperlinkHandler {
+  constructor(root) {
+    this.root = root;
+  }
+
+  element(element) {
+    try {
+      if (element.hasAttribute("href")) {
+        new URL(element.getAttribute("href")); // If this doesn't throw, it's an global link
+      }
+    } catch (e) {
+      element.setAttribute('href', `${rootUrl}${new URL(element.getAttribute('href'), this.root).toString()}`);
+    }
+  }
+}
+
+class LinkHandler {
+  constructor(root) {
+    this.root = root;
+  }
+
+  element(element) {
+    try {
+      if (element.hasAttribute("href")) {
+        new URL(element.getAttribute("href")); // If this doesn't throw, it's an global link
+      }
+    } catch (e) {
+      element.setAttribute('href', new URL(element.getAttribute('href'), this.root).toString());
+    }
+  }
+}
+class ScriptHandler {
+  constructor(root) {
+    this.root = root;
+  }
+
+  element(element) {
+    try {
+      if (element.hasAttribute("src")) {
+        new URL(element.getAttribute("src")); // If this doesn't throw, it's an global link
+      }
+    } catch (e) {
+      element.setAttribute('src', new URL(element.getAttribute('src'), this.root).toString());
+    }
+  }
+}
 
 addEventListener('fetch', event => {
   event.respondWith(handleRequest(event.request))
 })
-
-/**
- * @param {HTMLElement} node
- */
-function deepText(node) {
-  let A = [];
-  if (!node) return [];
-  node.childNodes.forEach(childNode => {
-    if (childNode.nodeType === 3) {
-      if (!listOfElements.includes(node.tagName)) return;
-      if (childNode.textContent) {
-        childNode.textContent = uwuify.uwuify(childNode.textContent);
-      }
-      A.push(childNode);
-    } else {
-      A = A.concat(deepText(childNode));
-    }
-  })
-  return A;
-}
 
 /**
  * Respond with hello worker text
@@ -67,41 +81,34 @@ async function handleRequest(request) {
         }
       }
       const response = await fetch(url);
-      const html = (await (await response).text());
-      const root = parse(html);
-      deepText(root);
+      const newResponse = new HTMLRewriter()
+      .on("p", new TextHandler())
+      .on("h1", new TextHandler())
+      .on("h2", new TextHandler())
+      .on("h3", new TextHandler())
+      .on("h4", new TextHandler())
+      .on("h5", new TextHandler())
+      .on("h6", new TextHandler())
+      .on("a", new TextHandler())
+      .on("ul", new TextHandler())
+      .on("li", new TextHandler())
+      .on("em", new TextHandler())
+      .on("strong", new TextHandler())
+      .on("i", new TextHandler())
+      .on("b", new TextHandler())
+      .on("span", new TextHandler())
+      .on("title", new TextHandler())
+      .on("script", new ScriptHandler(url.toString()))
+      .on("a", new HyperlinkHandler(url.toString()))
+      .on("link", new LinkHandler(url.toString()))
+      .transform(response)
 
-      root.querySelectorAll('a').forEach((link) => {
-        try {
-          if (link.hasAttribute('href')) new URL(link.getAttribute('href'))
-        } catch (e) {
-          link.setAttribute('href', new URL(link.getAttribute('href'), targetUrl).toString())
-        }
-        if (link.hasAttribute('href')) link.setAttribute('href', `${rootUrl}${link.getAttribute('href')}`);
-      })
-
-      // Fix all links and scripts
-      root.querySelectorAll('link').forEach(link => {
-        try {
-          if (link.hasAttribute('href')) new URL(link.getAttribute('href'))
-        } catch (e) {
-          link.setAttribute('href', new URL(link.getAttribute('href'), targetUrl).toString())
-        }
-      })
-
-      root.querySelectorAll('script').forEach(link => {
-        try {
-          if (link.hasAttribute('src')) new URL(link.getAttribute('src'))
-        } catch (e) {
-          link.setAttribute('src', new URL(link.getAttribute('src'), targetUrl).toString())
-        }
-      })
-
+      const html = await newResponse.text();
       UWUNET_KV.put(url.toString(), JSON.stringify({
         timestamp: Date.now(),
-        html: root.toString(),
+        html: html,
       }))
-      return new Response(root.toString(), {
+      return new Response(html, {
         headers: { 'content-type': 'text/html' },
       })
     } catch(e) {
@@ -132,6 +139,16 @@ async function handleRequest(request) {
             <li><a href="/uwuify?url=https://en.wikipedia.org/">Wikipedia (Home page)</a></li>
             <li><a href="/uwuify?url=https://motherfuckingwebsite.com/">Motherfucking website</a></li>
             <li><a href="/uwuify?url=https://aws.com/">AWS</a></li>
+            <li><a href="/uwuify?url=https://uwunet.raikas.workers.dev/cloudflare">Youtube</a></li>
+          </ul>
+          <p>How does it work?</p>
+          <ul>
+            <li>User sends an request with url</li>
+            <li>If it is cached in KV (and not older than 10 minutes) send the cached one</li>
+            <li>Else, fetch the website</li>
+            <li>Use Cloudflare HTMLRewriter to replace all text, links, script src and link href's and title</li>
+            <li>Save to KV for later use</li>
+            <li>UwU for the user</li>
           </ul>
           <p>NoCSS website. I ain't a good frontend developer :).</p>
       </body>
