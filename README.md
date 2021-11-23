@@ -1,6 +1,7 @@
 # UwUNet
 
-View (almost) any website uwufied!
+Hello! This is my project for the [Cloudflare Developer Challenge](https://challenge.developers.cloudflare.com/). It utilizes Cloudflare Workers and KV (for caching). \
+View (almost) any website uwufied! I used Cloudflare's own HTMLRewriter module.
 
 ## DEMO
 
